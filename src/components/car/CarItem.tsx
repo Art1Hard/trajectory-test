@@ -1,7 +1,10 @@
 import React from "react";
-import CarDeleteButton from "./CarDeleteButton";
+import { CarDeleteButton, CarEditButton } from "./buttons";
 import { getTailwindColor } from "@src/config/tailwindColors";
 import { useCarStore } from "@src/app/store/car";
+import CarEdit from "./CarEdit";
+import useModal from "@src/hooks/useModal";
+import { toast } from "sonner";
 
 type CarItemProps = {
 	id: number;
@@ -20,6 +23,7 @@ const CarItem: React.FC<CarItemProps> = ({
 	color,
 	price,
 }) => {
+	const { isModalOpen, openModal, closeModal } = useModal();
 	const { deleteCar } = useCarStore();
 	const colorClass = getTailwindColor(color);
 
@@ -29,13 +33,14 @@ const CarItem: React.FC<CarItemProps> = ({
 				onClick={() => {
 					if (!confirm("This action cannot be undone. Proceed?")) return;
 					deleteCar(id);
+					toast.success(`Car «${name} ${model}» was deleted!`);
 				}}
 			/>
 
 			<h2 className="text-2xl font-semibold text-yellow-400 mb-4 tracking-wide">
 				{name} {model}
 			</h2>
-			<ul className="space-y-2 text-gray-300 text-sm">
+			<ul className="space-y-2 text-gray-300 text-sm mb-6">
 				<li>
 					<span className="text-gray-400">Year:</span> {year}
 				</li>
@@ -53,9 +58,15 @@ const CarItem: React.FC<CarItemProps> = ({
 					</span>
 				</li>
 			</ul>
-			<button className="mt-6 w-full bg-gradient-to-r from-yellow-500 to-yellow-400 text-gray-900 font-semibold py-2 px-4 rounded-xl hover:from-yellow-600 hover:to-yellow-500 transition">
-				View Details
-			</button>
+			<CarEditButton onClick={openModal} />
+
+			<CarEdit
+				id={id}
+				name={name}
+				price={price}
+				isModalOpen={isModalOpen}
+				closeModal={closeModal}
+			/>
 		</div>
 	);
 };

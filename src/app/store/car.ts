@@ -1,20 +1,35 @@
-import type { ICar } from "@src/types/cars";
+import type { CarFormData, ICar } from "@src/types/cars";
+import { sortCarsByKey } from "@src/utils/sortArrayByKey";
 import { shallow } from "zustand/shallow";
 import { createWithEqualityFn } from "zustand/traditional";
 
 interface ICarStore {
 	cars: ICar[];
+	activeSort: string | undefined;
 	setCars: (cars: ICar[]) => void;
 	deleteCar: (id: number) => void;
+	editCar: (id: number, body: CarFormData) => void;
 	sortCars: (sort: string) => void;
 }
 
 export const useCarStore = createWithEqualityFn<ICarStore>()(
 	(set) => ({
 		cars: [],
+		activeSort: undefined,
 		setCars: (cars) =>
 			set(() => {
 				return { cars };
+			}),
+		editCar: (id, body) =>
+			set((state) => {
+				let updatedCars = state.cars.map((car) =>
+					car.id === id ? { ...car, ...body } : car
+				);
+
+				const activeSort = state.activeSort;
+				if (activeSort) updatedCars = sortCarsByKey(updatedCars, activeSort);
+
+				return { cars: updatedCars };
 			}),
 		deleteCar: (id) =>
 			set((state) => {
@@ -22,17 +37,8 @@ export const useCarStore = createWithEqualityFn<ICarStore>()(
 			}),
 		sortCars: (sort) =>
 			set((state) => {
-				const [key, order] = sort.startsWith("-")
-					? [sort.slice(1), "desc"]
-					: [sort, "asc"];
-
-				const sortedCars = [...state.cars].sort((firstCar, secondCar) => {
-					if (firstCar[key] < secondCar[key]) return order === "asc" ? -1 : 1;
-					if (firstCar[key] > secondCar[key]) return order === "asc" ? 1 : -1;
-					return 0;
-				});
-
-				return { cars: sortedCars };
+				const sortedCars = sortCarsByKey(state.cars, sort);
+				return { cars: sortedCars, activeSort: sort };
 			}),
 	}),
 	shallow

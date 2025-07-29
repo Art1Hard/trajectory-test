@@ -1,23 +1,12 @@
 import { ChevronDown } from "lucide-react";
 import cn from "clsx";
-import { useState } from "react";
 import DropdownButton from "./DropdownButton";
-import { useCarStore } from "@src/app/store/car";
-
-const sortButtons = [
-	{ title: "price: low to high", value: "price" },
-	{ title: "price: high to low", value: "-price" },
-	{ title: "year: newest", value: "-year" },
-	{ title: "year: oldest", value: "year" },
-];
+import useCarSortDropdown from "@src/hooks/car/useCarSortDropdown";
+import { sortButtons } from "@src/config/carSortButtons";
 
 export const SortDropdown = () => {
-	const { sortCars } = useCarStore();
-	const [sortTitle, setSortTitle] = useState<string>("");
-	const [isOpen, setIsOpen] = useState(false);
-
-	const open = () => setIsOpen(true);
-	const close = () => setIsOpen(false);
+	const { sortTitle, isOpen, open, close, handleSortCars } =
+		useCarSortDropdown();
 
 	return (
 		<div className="relative inline-block text-left">
@@ -39,11 +28,7 @@ export const SortDropdown = () => {
 						{sortButtons.map((button) => (
 							<DropdownButton
 								key={button.value}
-								onClick={() => {
-									sortCars(button.value);
-									setSortTitle(button.title);
-									close();
-								}}>
+								onClick={() => handleSortCars(button)}>
 								{button.title}
 							</DropdownButton>
 						))}
