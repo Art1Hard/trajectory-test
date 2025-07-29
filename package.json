@@ -2,10 +2,12 @@
   "name": "trajectory-test",
   "private": true,
   "version": "0.0.0",
+  "homepage": "https://art1hard.github.io/trajectory-test",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "deploy": "gh-pages -d dist",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -13,6 +15,7 @@
     "@tanstack/react-query": "^5.83.0",
     "axios": "^1.11.0",
     "clsx": "^2.1.1",
+    "gh-pages": "^6.3.0",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.531.0",
     "react": "^19.1.0",
